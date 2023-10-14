@@ -13,9 +13,19 @@ type UpdateNodePayload struct {
 	Content  string `json:"content"`
 }
 
-type GetNodeById struct {
+type GetNodeByIdPayload struct {
 	Id int `json:"id"`
 }
 
-type GetAllNode struct {
+type GetAllNodePayload struct {
+}
+
+type AddEdgePayload struct {
+	SrcId int    `json:"src_id"`
+	TarId int    `json:"tar_id"`
+	Desc  string `json:"desc"`
+}
+
+type GetNodeVersionListPayload struct {
+	NodeId int `json:"node_id"`
 }

@@ -18,8 +18,10 @@ func main() {
 	handler := &service.SimpleHandler{}
 	r := mux.NewRouter()
 	r.HandleFunc("/add_node", handler.AddNode).Methods("POST")
-	r.HandleFunc("/update_node", handler.AddNode).Methods("POST")
-	r.HandleFunc("/add_comment", handler.AddNode).Methods("POST")
+	r.HandleFunc("/add_edge", handler.AddEdge).Methods("POST")
+	r.HandleFunc("/update_node", handler.UpdateNode).Methods("POST")
+	r.HandleFunc("/add_comment", handler.AddComment).Methods("POST")
+	r.HandleFunc("/get_node_version_list", handler.GetNodeVersionList).Methods("POST")
 	r.HandleFunc("/get_node", handler.GetNodeById).Methods("POST")
 	r.HandleFunc("/get_all_node", handler.GetAllNode).Methods("POST")
 	listenAddr := getHostAndPort(address, port)

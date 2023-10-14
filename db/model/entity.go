@@ -5,13 +5,14 @@ import (
 )
 
 type Node struct {
-	Id         int       `gorm:"column:id;type:int(11);primary_key;AUTO_INCREMENT" json:"id"`
-	ParentId   int       `gorm:"column:parent_id;type:int(11)" json:"parent_id"`
-	Name       string    `gorm:"column:name;type:varchar(255)" json:"name"`
-	Content    string    `gorm:"column:content;type:varchar(255)" json:"content"`
-	Comment    string    `gorm:"column:comment;type:varchar(255)" json:"comment"`
-	CreateTime time.Time `gorm:"column:create_time;type:datetime;default:CURRENT_TIMESTAMP" json:"create_time"`
-	UpdateTime time.Time `gorm:"column:update_time;type:datetime;default:CURRENT_TIMESTAMP" json:"update_time"`
+	Id         int       `gorm:"column:id;primary_key;AUTO_INCREMENT;NOT NULL"`
+	NodeId     int       `gorm:"column:node_id;default:NULL"`
+	VersionId  int       `gorm:"column:version_id;default:NULL"`
+	Name       string    `gorm:"column:name;default:NULL"`
+	Content    string    `gorm:"column:content;default:NULL"`
+	Comment    string    `gorm:"column:comment;default:NULL"`
+	CreateTime time.Time `gorm:"column:create_time;default:CURRENT_TIMESTAMP"`
+	UpdateTime time.Time `gorm:"column:update_time;default:NULL"`
 }
 
 func (m *Node) TableName() string {
@@ -30,4 +31,17 @@ type Comment struct {
 
 func (m *Comment) TableName() string {
 	return "comment"
+}
+
+type Edge struct {
+	Id          int       `gorm:"column:id;primary_key;AUTO_INCREMENT;NOT NULL"`
+	SrcId       int       `gorm:"column:src_id;NOT NULL"`
+	TarId       int       `gorm:"column:tar_id;NOT NULL"`
+	Description string    `gorm:"column:description;default:NULL"`
+	CreateTime  time.Time `gorm:"column:create_time;default:CURRENT_TIMESTAMP"`
+	UpdateTime  time.Time `gorm:"column:update_time;default:CURRENT_TIMESTAMP"`
+}
+
+func (e *Edge) TableName() string {
+	return "edge"
 }

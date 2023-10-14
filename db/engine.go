@@ -12,7 +12,7 @@ import (
 const (
 	DB_User     = "DB_User"
 	DB_Password = "DB_Password"
-	DB_Host     = "124.220.1.170"
+	DB_Host     = "0.0.0.0"
 	DB_Port     = "3307"
 	DB_database = "webassembly"
 )
@@ -32,22 +32,48 @@ func initDSN() string {
 	return fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", os.Getenv(DB_User), os.Getenv(DB_Password), DB_Host, DB_Port, DB_database)
 }
 
-func CreateNode(parentId int, name, content string) error {
-	if err := db.Create(&model.Node{
-		ParentId: parentId,
-		Name:     name,
-		Content:  content,
-		Comment:  "",
-	}).Error; err != nil {
-		log.Println("CreateNode error:%v", err)
-		return err
+func GetNodeVersionList(nodeId int) ([]*model.Node, error) {
+	res := make([]*model.Node, 0, 10)
+	if err := db.Where("node_id = ?", nodeId).Find(&res).Error; err != nil {
+		log.Printf("GetNodeVersionList error:%v", err)
+		return nil, err
 	}
-	return db.Error
+	return res, nil
 }
 
-func UpdateNode() error {
+func CreateNode(name, content string) error {
+	if err := db.Create(&model.Node{
+		Name:    name,
+		Content: content,
+		Comment: "",
+	}).Error; err != nil {
+		log.Printf("CreateNode error:%v", err)
+		return err
+	}
+	return nil
+}
+
+func CreateEdge(srcId, tarId int, desc string) error {
+	if err := db.Create(&model.Edge{
+		SrcId:       srcId,
+		TarId:       tarId,
+		Description: desc,
+	}).Error; err != nil {
+		log.Printf("CreateEdge error:%v", err)
+		return err
+	}
 	return nil
 
+}
+
+func UpdateNode(id int, name, content string) error {
+	res := &model.Node{Id: id}
+	if err := db.Model(res).Updates(&model.Node{Name: name, Content: content}).Error; err != nil {
+		log.Printf("UpdateNode error:%v", err)
+		return err
+	}
+
+	return nil
 }
 
 func GetOneNode(id int) (*model.Node, error) {

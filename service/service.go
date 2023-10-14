@@ -29,19 +29,19 @@ func (*SimpleHandler) AddNode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := db.CreateNode(p.ParentId, p.Name, p.Content); err != nil {
+	if err := db.CreateNode(p.Name, p.Content); err != nil {
 		log.Printf("db.CreateNode error:%v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	log.Printf("AddNode Success! parentId: %s, Name: %s", p.ParentId, p.Name)
+	log.Printf("AddNode Success! parentId: %v, Name: %s", p.ParentId, p.Name)
 }
 
 func (*SimpleHandler) GetAllNode(w http.ResponseWriter, r *http.Request) {
 	res, err := db.GetNodeBatch()
 	if err != nil {
-		log.Printf("GetAllNode error:%v", err)
+		log.Printf("GetAllNodePayload error:%v", err)
 		return
 	}
 
@@ -49,13 +49,15 @@ func (*SimpleHandler) GetAllNode(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		log.Printf("Failed to encode response: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (*SimpleHandler) GetNodeById(w http.ResponseWriter, r *http.Request) {
-	p := &GetNodeById{}
+	p := &GetNodeByIdPayload{}
 	if err := parsePayload(r, p); err != nil {
-		http.Error(w, "GetNodeById Failed to decode JSON", http.StatusBadRequest)
+		http.Error(w, "GetNodeByIdPayload Failed to decode JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -63,13 +65,17 @@ func (*SimpleHandler) GetNodeById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("db.GetOneNode error:%v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		log.Printf("Failed to encode response: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func (*SimpleHandler) UpdateNode(w http.ResponseWriter, r *http.Request) {
@@ -79,11 +85,49 @@ func (*SimpleHandler) UpdateNode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := db.UpdateNode(); err != nil {
+	if err := db.UpdateNode(p.Id, p.Name, p.Content); err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (*SimpleHandler) AddComment(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func (*SimpleHandler) GetNodeVersionList(w http.ResponseWriter, r *http.Request) {
+	p := &GetNodeVersionListPayload{}
+	if err := parsePayload(r, p); err != nil {
+		http.Error(w, "GetNodeVersionList Failed to decode JSON", http.StatusBadRequest)
+		return
+	}
+
+	res, err := db.GetNodeVersionList(p.NodeId)
+	if err != nil {
+		log.Printf("db.GetOneNode error:%v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		log.Printf("Failed to encode response: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (*SimpleHandler) AddEdge(w http.ResponseWriter, r *http.Request) {
+	p := &AddEdgePayload{}
+	if err := parsePayload(r, p); err != nil {
+		http.Error(w, "AddEdge Failed to decode JSON", http.StatusBadRequest)
+		return
+	}
+	if err := db.CreateEdge(p.SrcId, p.TarId, p.Desc); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }
