@@ -4,3 +4,5 @@ main
 *_test.go
 bin/
 .idea/
+run.log
+run.sh
