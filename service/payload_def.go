@@ -1,20 +1,21 @@
 package service
 
 type AddNodePayload struct {
-	ParentId int    `json:"parent_id"`
-	Name     string `json:"name"`
-	Content  string `json:"content"`
+	SrcId   int    `json:"src_id"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
 type UpdateNodePayload struct {
-	Id       int    `json:"id"`
-	ParentId int    `json:"parent_id"`
-	Name     string `json:"name"`
-	Content  string `json:"content"`
+	Id      int    `json:"id"`
+	SrcId   int    `json:"src_id"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
 }
 
-type GetNodeByIdPayload struct {
-	Id int `json:"id"`
+type GetNodeVersion struct {
+	NodeId    int `json:"node_id"`
+	VersionId int `json:"version_id"`
 }
 
 type GetAllNodePayload struct {
